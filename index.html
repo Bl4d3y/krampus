@@ -104,8 +104,9 @@
         <form id="loadstringForm" class="command-section">
             <textarea id="command-input">-- website made by nevrloose, execution using nyx</textarea>
             <div class="buttons">
-                <button type="button" id="clear-button">Clear</button>
                 <button type="submit" id="execute-button">Execute</button>
+                <button type="button" id="clear-button">Clear</button>
+                <button type="button" class="button open-button" onclick="openFile()">Open File</button>
                 <button type="button" id="Script-Hub" onclick="location.href='scripthub.html'">ScriptHub</button>
             </div>
         </form>
@@ -145,6 +146,26 @@
                 console.error('Error:', error);
             });
         });
+
+        function openFile() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.lua,.txt';
+    input.style.display = 'none';
+    input.addEventListener('change', function() {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('code').value = event.target.result;
+            };
+            reader.readAsText(file);
+        }
+    });
+    document.body.appendChild(input);
+    input.click();
+    document.body.removeChild(input);
+}
 
         function checkLocalhost() {
             fetch('http://localhost:6969/', { mode: 'no-cors' })
