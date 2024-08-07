@@ -9,7 +9,6 @@ const SCRIPTS_FILE = path.join(__dirname, 'scripts.json');
 app.use(express.static('public'));
 app.use(express.json());
 
-// Endpoint to get the scripts
 app.get('/scripts.json', (req, res) => {
     fs.readFile(SCRIPTS_FILE, (err, data) => {
         if (err) {
@@ -19,7 +18,6 @@ app.get('/scripts.json', (req, res) => {
     });
 });
 
-// Endpoint to upload a script
 app.post('/upload', (req, res) => {
     const newScript = req.body;
     fs.readFile(SCRIPTS_FILE, (err, data) => {
