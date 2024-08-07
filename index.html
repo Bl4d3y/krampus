@@ -89,6 +89,51 @@
         button:hover {
             background-color: #666;
         }
+        #settings-modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        #settings-modal-content {
+            background-color: #2d2d2d;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 10px;
+        }
+        #settings-modal label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        #settings-modal input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #1e1e1e;
+            color: #fff;
+        }
+        #settings-modal .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        #settings-modal .close:hover,
+        #settings-modal .close:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -102,15 +147,27 @@
             <span id="status-text">Not Connected</span>
         </div>
         <form id="loadstringForm" class="command-section">
-            <textarea id="command-input">-- website made by nevrloose, execution using nyx</textarea>
+            <textarea id="command-input">-- website made by nevrloose, execution by speedsterkawaii</textarea>
             <div class="buttons">
                 <button type="submit" id="execute-button">Execute</button>
                 <button type="button" id="clear-button">Clear</button>
                 <button type="button" class="button open-button" onclick="openFile()">Open File</button>
                 <button type="button" id="Script-Hub" onclick="location.href='scripthub.html'">ScriptHub</button>
+                <button type="button" id="settings-button">Settings</button>
             </div>
         </form>
     </div>
+
+    <div id="settings-modal">
+        <div id="settings-modal-content">
+            <span class="close">&times;</span>
+            <h2>Settings</h2>
+            <label for="background-url">Background Image URL:</label>
+            <input type="text" id="background-url" placeholder="Enter background image URL">
+            <button id="apply-settings-button">Apply</button>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/lua/lua.min.js"></script>
     <script>
@@ -148,24 +205,24 @@
         });
 
         function openFile() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.lua,.txt';
-    input.style.display = 'none';
-    input.addEventListener('change', function() {
-        const file = input.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                document.getElementById('code').value = event.target.result;
-            };
-            reader.readAsText(file);
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.lua,.txt';
+            input.style.display = 'none';
+            input.addEventListener('change', function() {
+                const file = input.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.getElementById('code').value = event.target.result;
+                    };
+                    reader.readAsText(file);
+                }
+            });
+            document.body.appendChild(input);
+            input.click();
+            document.body.removeChild(input);
         }
-    });
-    document.body.appendChild(input);
-    input.click();
-    document.body.removeChild(input);
-}
 
         function checkLocalhost() {
             fetch('http://localhost:6969/', { mode: 'no-cors' })
@@ -186,6 +243,38 @@
 
         setInterval(checkLocalhost, 5000);
         checkLocalhost();
+
+        // Settings modal logic
+        const settingsModal = document.getElementById('settings-modal');
+        const settingsButton = document.getElementById('settings-button');
+        const closeModal = document.getElementsByClassName('close')[0];
+        const applySettingsButton = document.getElementById('apply-settings-button');
+
+        settingsButton.onclick = function() {
+            settingsModal.style.display = 'block';
+        }
+
+        closeModal.onclick = function() {
+            settingsModal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+        }
+
+        applySettingsButton.onclick = function() {
+            const backgroundUrl = document.getElementById('background-url').value;
+
+            if (backgroundUrl) {
+                document.body.style.backgroundImage = `url(${backgroundUrl})`;
+                document.body.style.backgroundSize = 'cover';
+            }
+
+
+            settingsModal.style.display = 'none';
+        }
     </script>
 </body>
 </html>
