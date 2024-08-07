@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Hub</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #bfbfbf;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 80%;
+            max-width: 900px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #2d2d2d;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        header {
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+        .upload-section, .scripts-section {
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .scripts-list {
+            list-style: none;
+            padding: 0;
+        }
+        .scripts-list li {
+            background-color: #3d3d3d;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+        }
+        .script-name {
+            cursor: pointer;
+            color: #61dafb;
+            margin: 0;
+        }
+        .script-name:hover {
+            text-decoration: underline;
+        }
+        .script-content {
+            display: none;
+            margin-top: 10px;
+        }
+        .copy-btn {
+            background-color: #61dafb;
+            color: #1e1e1e;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            align-self: flex-start;
+        }
+        .copy-btn:hover {
+            background-color: #21a1f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Script Hub</h1>
+        </header>
+        <div class="upload-section">
+            <h2>Upload Script</h2>
+            <input type="file" id="file-input">
+            <button id="upload-button">Upload</button>
+        </div>
+        <div class="scripts-section">
+            <h2>Scripts</h2>
+            <ul class="scripts-list" id="scripts-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadScriptsFromLocalStorage();
+
+            document.getElementById('upload-button').addEventListener('click', () => {
+                const fileInput = document.getElementById('file-input');
+                if (fileInput.files.length === 0) {
+                    alert('Please select a file to upload.');
+                    return;
+                }
+
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    const content = e.target.result;
+                    const scriptName = file.name;
+
+                    const script = {
+                        name: scriptName,
+                        content: content,
+                        id: `script-${Date.now()}`
+                    };
+
+                    saveScriptToLocalStorage(script);
+                    addScriptToList(script);
+                };
+
+                reader.readAsText(file);
+            });
+        });
+
+        function addScriptToList(script) {
+            const li = document.createElement('li');
+            li.id = script.id;
+
+            const scriptName = document.createElement('p');
+            scriptName.className = 'script-name';
+            scriptName.textContent = script.name;
+            scriptName.addEventListener('click', () => {
+                const contentElem = li.querySelector('.script-content');
+                contentElem.style.display = contentElem.style.display === 'none' ? 'block' : 'none';
+            });
+            li.appendChild(scriptName);
+
+            const scriptContent = document.createElement('pre');
+            scriptContent.className = 'script-content';
+            scriptContent.textContent = script.content;
+            li.appendChild(scriptContent);
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-btn';
+            copyButton.textContent = 'Copy';
+            copyButton.addEventListener('click', () => copyToClipboard(script.content));
+            li.appendChild(copyButton);
+
+            document.getElementById('scripts-list').appendChild(li);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Script copied to clipboard!');
+            }).catch((err) => {
+                alert('Failed to copy script: ', err);
+            });
+        }
+
+        function saveScriptToLocalStorage(script) {
+            let scripts = JSON.parse(localStorage.getItem('scripts')) || [];
+            scripts.push(script);
+            localStorage.setItem('scripts', JSON.stringify(scripts));
+        }
+
+        function loadScriptsFromLocalStorage() {
+            const scripts = JSON.parse(localStorage.getItem('scripts')) || [];
+            scripts.forEach(script => addScriptToList(script));
+        }
+    </script>
+</body>
+</html>
