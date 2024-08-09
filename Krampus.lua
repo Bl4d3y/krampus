@@ -1,7 +1,12 @@
--- Gui to Lua
--- Version: 3.2
+print("""
+   __ __                           
+  / //_/______ ___ _  ___  __ _____
+ / ,< / __/ _ `/  ' \/ _ \/ // (_-<
+/_/|_/_/  \_,_/_/_/_/ .__/\_,_/___/                   
+                   /_/             
+""")
+print("Made by Nevrloose & speedsterkawaii")
 
--- Instances:
 
 local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
